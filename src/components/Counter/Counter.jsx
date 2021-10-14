@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useReducer } from 'react';
 // import s from 'components/Counter/Counter.module.css';
 import FeedbackOptions from 'components/Counter/FeedbackOptions';
 import Statistics from 'components/Counter/Statistics';
@@ -6,36 +6,35 @@ import Section from 'components/Counter/Section';
 import Notification from 'components/Counter/Notification';
 
 function Counter() {
-  const initialValue = 0;
-  const [good, setGood] = useState(initialValue);
-  const [neutral, setNeutral] = useState(initialValue);
-  const [bad, setBad] = useState(initialValue);
-
-  const addFeedback = e => {
-    const name = e.target.name;
-
-    switch (name) {
+  function countReducer(state, action) {
+    switch (action.type) {
       case 'good':
-        setGood(prev => prev + 1);
-        break;
+        return { ...state, good: state.good + action.payload };
       case 'neutral':
-        setNeutral(prev => prev + 1);
-        break;
+        return { ...state, neutral: state.neutral + action.payload };
       case 'bad':
-        setBad(prev => prev + 1);
-        console.log(bad);
-        break;
+        return { ...state, bad: state.bad + action.payload };
+
       default:
-        return;
+        throw new Error(`Unsuported action ${action.type}`);
     }
-  };
+  }
+
+  const [state, dispatch] = useReducer(countReducer, {
+    good: 0,
+    neutral: 0,
+    bad: 0,
+  });
 
   const countTotalFeedback = () => {
+    const { good, neutral, bad } = state;
     // console.log(good, neutral, bad);
     const total = good + neutral + bad;
     return total;
   };
+
   const countPositiveFeedbackPercentage = () => {
+    const { good } = state;
     const totalFeedback = countTotalFeedback();
     const percentage = Math.floor((good * 100) / totalFeedback);
     return percentage;
@@ -49,7 +48,9 @@ function Counter() {
       <Section title={'Please leave feedback'}>
         <FeedbackOptions
           options={['good', 'neutral', 'bad']}
-          addFeedback={addFeedback}
+          onClick={e => {
+            dispatch({ type: `${e.target.name}`, payload: 1 });
+          }}
         />
       </Section>
 
@@ -58,10 +59,10 @@ function Counter() {
       ) : (
         <Section title={'Statistics'}>
           <Statistics
-            good={good}
-            neutral={neutral}
-            bad={bad}
-            // options={(good, neutral, bad)}
+            // good={state.good}
+            // neutral={state.neutral}
+            // bad={state.bad}
+            options={state}
             total={total}
             percentage={percentage}
           />
@@ -72,3 +73,27 @@ function Counter() {
 }
 
 export default Counter;
+
+// ========= useState
+// const [good, setGood] = useState(initialValue);
+// const [neutral, setNeutral] = useState(initialValue);
+// const [bad, setBad] = useState(initialValue);
+
+// const addFeedback = e => {
+//   const name = e.target.name;
+
+//   switch (name) {
+//     case 'good':
+//       setGood(prev => prev + 1);
+//       break;
+//     case 'neutral':
+//       setNeutral(prev => prev + 1);
+//       break;
+//     case 'bad':
+//       setBad(prev => prev + 1);
+//       console.log(bad);
+//       break;
+//     default:
+//       throw new Error(`Unsuported action ${name}`);
+//   }
+// };

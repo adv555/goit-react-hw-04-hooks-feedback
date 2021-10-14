@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import s from 'components/Counter/FeedbackOptions/FeedbackOptions.module.css';
 
-const FeedbackOptions = ({ options, addFeedback }) => {
+const FeedbackOptions = ({ options, onClick }) => {
   return options.map(option => {
     return (
       <label key={option}>
@@ -10,7 +10,7 @@ const FeedbackOptions = ({ options, addFeedback }) => {
           className={s.cornerButton}
           name={option}
           value={option}
-          onClick={addFeedback}
+          onClick={onClick}
         />
       </label>
     );
@@ -19,7 +19,7 @@ const FeedbackOptions = ({ options, addFeedback }) => {
 
 FeedbackOptions.propTypes = {
   options: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
-  addFeedback: PropTypes.func.isRequired,
+  onClick: PropTypes.func.isRequired,
 };
 
 export default FeedbackOptions;
